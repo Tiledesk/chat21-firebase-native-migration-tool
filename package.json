@@ -1,0 +1,18 @@
+{
+  "name": "tiledesk-firebase-mqtt-migration-tool",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "author": "Tiledesk s.r.l",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "firebase-admin": "^10.2.0",
+    "mongodb": "^4.7.0",
+    "nodemon": "^2.0.16"
+  }
+}
