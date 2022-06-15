@@ -1,13 +1,11 @@
-
 var ref;
 var lastKnownKey='';
 var arrayElements = [];
 
-
-async function getGroups(db){
-    console.log('GROUPS FIREBASE NODE INIT ...')
-    const groups_ref = '/apps/'+ process.env.TENANT  +'/groups/'
-    ref = db.ref(groups_ref);
+async function getConversationsForUserId(db, uid){
+    console.log('CONVERSARIONS FIREBASE NODE INIT ...')
+    const conversations_uid = '/apps/'+ process.env.TENANT  +'/users/'+uid +'/conversations'
+    ref = db.ref(conversations_uid);
     let complete = false;
     let STEP= 2
     let index = 0
@@ -26,9 +24,9 @@ async function getGroups(db){
             complete = true
         })
     }
-    console.log('DATA FROM FIREBASE-->', arrayElements.length)
-
+    return arrayElements
 }
+
 
 
 function getElements(STEP){
@@ -42,9 +40,9 @@ function getElements(STEP){
                     ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
                             console.log('data key::', key)
-                            let group = snaps.val()[key]
-                            group.timelineOf = key
-                            array.push(group)
+                            let conversation = snaps.val()[key]
+                            conversation.uid = key
+                            array.push(conversation)
                             lastKnownKey = key;
                             
                         }
@@ -55,10 +53,10 @@ function getElements(STEP){
                     console.log('Nth CALL TO DATABASE ... ', lastKnownKey, STEP)
                     ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            let group = snaps.val()[key]
                             console.log('data key::', key)
-                            group.timelineOf = key
-                            array.push(group)
+                            let conversation = snaps.val()[key]
+                            conversation.uid = key
+                            array.push(conversation)
                             lastKnownKey = key;
                         }
                         console.log('lastKnownKey', lastKnownKey)
@@ -74,9 +72,8 @@ function getElements(STEP){
     })
 }
 
-
 async function saveToMongo(){
-    const db = global.mongoDB.collection('groups')
+    const db = global.mongoDB.collection('conversations')
     db.insertMany(arrayElements, function(err, res) {
         if (err) throw err;
         console.log("Number of documents inserted: " + res.insertedCount);
@@ -84,4 +81,4 @@ async function saveToMongo(){
 }
 
 
-module.exports = { getGroups , saveToMongo};
+module.exports = { getConversationsForUserId , saveToMongo};

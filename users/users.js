@@ -1,23 +1,26 @@
 
+const conversations = require('../conversations/conversations')
+
 var ref;
 var lastKnownKey='';
-var arrayElements = [];
 
-
-async function getGroups(db){
-    console.log('GROUPS FIREBASE NODE INIT ...')
-    const groups_ref = '/apps/'+ process.env.TENANT  +'/groups/'
-    ref = db.ref(groups_ref);
+async function getUser(db){
+    console.log('CONVERSARIONS FIREBASE NODE INIT ...')
+    const users_ref = '/apps/'+ process.env.TENANT  +'/users/'
+    ref = db.ref(users_ref);
     let complete = false;
-    let STEP= 2
+    let STEP= 1
     let index = 0
     // loadData(STEP)
     while (index !==2) {
         index = index+1
-        await getElements(STEP).then((data)=> {
-            arrayElements.push(...data)
+        await getSingleUser(STEP).then((data)=> {
             if (data.length === STEP || data.length) {
-                STEP +=2
+                console.log('RETRIVED user with id-->', data[0].uid)
+                conversations.getConversationsForUserId(db, data[0].uid).then((convs)=> {
+                    console.log('convs for userrrr', convs)
+                    conversations.saveToMongo(convs)
+                })
             } else {
                 complete = true;
             }
@@ -26,12 +29,9 @@ async function getGroups(db){
             complete = true
         })
     }
-    console.log('DATA FROM FIREBASE-->', arrayElements.length)
-
 }
 
-
-function getElements(STEP){
+function getSingleUser(STEP){
     return new Promise((resolve, reject)=> {
         let array = []
         // async function execute(){
@@ -42,9 +42,9 @@ function getElements(STEP){
                     ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
                             console.log('data key::', key)
-                            let group = snaps.val()[key]
-                            group.timelineOf = key
-                            array.push(group)
+                            let user = snaps.val()[key]
+                            user.uid = key
+                            array.push(user)
                             lastKnownKey = key;
                             
                         }
@@ -55,10 +55,10 @@ function getElements(STEP){
                     console.log('Nth CALL TO DATABASE ... ', lastKnownKey, STEP)
                     ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            let group = snaps.val()[key]
                             console.log('data key::', key)
-                            group.timelineOf = key
-                            array.push(group)
+                            let user = snaps.val()[key]
+                            user.uid = key
+                            array.push(user)
                             lastKnownKey = key;
                         }
                         console.log('lastKnownKey', lastKnownKey)
@@ -74,14 +74,4 @@ function getElements(STEP){
     })
 }
 
-
-async function saveToMongo(){
-    const db = global.mongoDB.collection('groups')
-    db.insertMany(arrayElements, function(err, res) {
-        if (err) throw err;
-        console.log("Number of documents inserted: " + res.insertedCount);
-    });
-}
-
-
-module.exports = { getGroups , saveToMongo};
+module.exports = { getUser }
