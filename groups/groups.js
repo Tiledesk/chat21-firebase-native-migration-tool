@@ -1,5 +1,5 @@
 
-var db = require('./../index')
+const db = require('./../index')
 var ref;
 var lastKnownKey='';
 var arrayElements = [];
