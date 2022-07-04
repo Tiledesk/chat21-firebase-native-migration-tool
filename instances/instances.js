@@ -1,14 +1,14 @@
 var ref;
 var lastKnownKey='';
 
-async function getConversationsForUserId(db, uid){ 
+async function getInstancesForUserId(db, uid){ 
     var arrayElements = [];
     lastKnownKey=''
-    console.log('CONVERSATIONS FIREBASE NODE INIT ...', uid, lastKnownKey)
-    const conversations_uid = '/apps/'+ process.env.TENANT  +'/users/'+uid +'/conversations'
-    ref = db.ref(conversations_uid);
+    console.log('INSTANCES FIREBASE NODE INIT ...', uid, lastKnownKey)
+    const instances_uid = '/apps/'+ process.env.TENANT  +'/users/'+uid +'/instances'
+    ref = db.ref(instances_uid);
     let complete = false;
-    let STEP= 20
+    let STEP= 2
     let index = 0
     // index!==3
     while (!complete) {
@@ -16,7 +16,7 @@ async function getConversationsForUserId(db, uid){
         await getElements(STEP, uid).then((data)=> {
             arrayElements.push(...data)
             if (data.length === STEP || data.length) {
-                STEP = 20
+                STEP = 2
             } else {
                 complete = true;
             }
@@ -29,7 +29,6 @@ async function getConversationsForUserId(db, uid){
 }
 
 
-
 function getElements(STEP, userId){
     return new Promise((resolve, reject)=> {
         let array = []
@@ -38,8 +37,8 @@ function getElements(STEP, userId){
                 if(lastKnownKey == ''){
                     ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            let conversation = generateGroupElementForMongo(snaps.val()[key], key, userId)
-                            array.push(conversation)
+                            let instance = generateGroupElementForMongo(snaps.val()[key], key, userId)
+                            array.push(instance)
                             lastKnownKey = key;
                             
                         }
@@ -48,8 +47,8 @@ function getElements(STEP, userId){
                 } else {
                     ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            let conversation = generateGroupElementForMongo(snaps.val()[key], key, userId)
-                            array.push(conversation)
+                            let instance = generateGroupElementForMongo(snaps.val()[key], key, userId)
+                            array.push(instance)
                             lastKnownKey = key;
                         }
                         resolve(array)
@@ -59,42 +58,43 @@ function getElements(STEP, userId){
             }else{
                 reject('ERROR --> STEP MUST BE > O', STEP)
             }
+        // }
+        // execute()
     })
 }
 
-async function saveToMongo(convs){
-    const db = global.mongoDB.collection('conversations')
+async function saveToMongo(instances){
+    const db = global.mongoDB.collection('instances')
 
     return new Promise((resolve, reject) => {
         let count=1
-        if(convs && convs.length > 0){
-            convs.forEach(conv =>{
-                console.log('Conversation id::', conv.key)
-                db.insertOne(conv, {upsert: true, multi: true}, function(err, res) {
+        if(instances && instances.length > 0){
+            instances.forEach(instance =>{
+                console.log('Instance id::', instance.key)
+                db.insertOne(instance, {upsert: true, multi: true}, function(err, res) {
                     if (err) throw err;
                     
-                    if(count === convs.length){
-                        console.log("Number of documents inserted: ", convs.length);
+                    if(count === instances.length){
+                        console.log("Number of documents inserted: ", instances.length);
                         resolve('ok')
                     }else{
                         count= count + 1
                     }
                 });
             })
-        }else {
+        }else{
             resolve('ok')
         }
     })
 }
 
-function generateGroupElementForMongo(conversation, key, userId){
-    conversation.key = key
-    conversation.timelineOf = userId
-    conversation.app_id= process.env.TENANT
-    conversation.archived = false
+function generateGroupElementForMongo(instance, key, userId){
+    instance.instance_id = key
+    instance.app_id= process.env.TENANT
+    instance.user_id = userId
 
-    return conversation
+    return instance
 }
 
 
-module.exports = { getConversationsForUserId , saveToMongo};
+module.exports = { getInstancesForUserId , saveToMongo};

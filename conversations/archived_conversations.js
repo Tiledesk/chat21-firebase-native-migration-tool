@@ -1,11 +1,11 @@
 var ref;
 var lastKnownKey='';
 
-async function getConversationsForUserId(db, uid){ 
+async function getConversationsForUserId(db, uid){
     var arrayElements = [];
     lastKnownKey=''
-    console.log('CONVERSATIONS FIREBASE NODE INIT ...', uid, lastKnownKey)
-    const conversations_uid = '/apps/'+ process.env.TENANT  +'/users/'+uid +'/conversations'
+    console.log('ARCHIVED CONVERSATIONS FIREBASE NODE INIT ...', uid, lastKnownKey)
+    const conversations_uid = '/apps/'+ process.env.TENANT  +'/users/'+uid +'/archived_conversations'
     ref = db.ref(conversations_uid);
     let complete = false;
     let STEP= 20
@@ -45,7 +45,7 @@ function getElements(STEP, userId){
                         }
                         resolve(array)
                     })
-                } else {
+                } else { 
                     ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
                             let conversation = generateGroupElementForMongo(snaps.val()[key], key, userId)
@@ -59,12 +59,14 @@ function getElements(STEP, userId){
             }else{
                 reject('ERROR --> STEP MUST BE > O', STEP)
             }
+        // }
+        // execute()
     })
 }
 
 async function saveToMongo(convs){
     const db = global.mongoDB.collection('conversations')
-
+    
     return new Promise((resolve, reject) => {
         let count=1
         if(convs && convs.length > 0){
@@ -91,7 +93,7 @@ function generateGroupElementForMongo(conversation, key, userId){
     conversation.key = key
     conversation.timelineOf = userId
     conversation.app_id= process.env.TENANT
-    conversation.archived = false
+    conversation.archived = true
 
     return conversation
 }

@@ -1,30 +1,49 @@
 
+const db = require('./../index')
 const conversations = require('../conversations/conversations')
-
+const archived_conversations = require('../conversations/archived_conversations')
+const messages = require('../messages/messages.js')
+const instances = require('../instances/instances.js')
 var ref;
 var lastKnownKey='';
 
-async function getUser(db){
-    console.log('CONVERSARIONS FIREBASE NODE INIT ...')
+async function getUser(){
+    console.log('USERS FIREBASE NODE INIT ...')
     const users_ref = '/apps/'+ process.env.TENANT  +'/users/'
-    ref = db.ref(users_ref);
+    ref = db.FIREBASE_db.ref(users_ref);
     let complete = false;
     let STEP= 1
     let index = 0
-    // loadData(STEP)
-    while (index !==2) {
+    // index!==3
+    while (!complete) {
         index = index+1
+        let currentUser= null
         await getSingleUser(STEP).then((data)=> {
+            currentUser = data
             if (data.length === STEP || data.length) {
                 console.log('RETRIVED user with id-->', data[0].uid)
-                conversations.getConversationsForUserId(db, data[0].uid).then((convs)=> {
-                    console.log('convs for userrrr', convs)
-                    conversations.saveToMongo(convs)
-                })
+                return currentUser
             } else {
                 complete = true;
             }
-        }).catch((err)=> {
+        })
+        .then((currentUser)=> {
+            console.log('CONVERSATIONS for user', currentUser[0].uid)
+            return getConversations(db.FIREBASE_db, currentUser)
+        })
+        .then(()=> {
+            console.log('ARCHIVED CONVERSATIONS for user', currentUser[0].uid)
+            return getArchivedConversations(db.FIREBASE_db, currentUser)
+        })
+        .then(()=> {
+            console.log('MESSAGES for user', currentUser[0].uid)
+            return getMessages(db.FIREBASE_db, currentUser)
+        })
+        .then(()=> {
+            console.log('INSTANCES for user', currentUser[0].uid)
+            return getInstances(db.FIREBASE_db, currentUser)
+        })
+        .catch((err)=> {
             console.log(err)
             complete = true
         })
@@ -35,33 +54,28 @@ function getSingleUser(STEP){
     return new Promise((resolve, reject)=> {
         let array = []
         // async function execute(){
+            // lastKnownKey = 'swK2FZ8tWENTvEYYpsm3pqjpv3B2'
+            lastKnownKey = "5fd3368949610e0034984e90"
             if(STEP > 0){
-                console.log('lasttttt', lastKnownKey)
                 if(lastKnownKey == ''){
-                    console.log('FIRST CALL TO DATABASE ... ', lastKnownKey)
                     ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            console.log('data key::', key)
                             let user = snaps.val()[key]
                             user.uid = key
                             array.push(user)
                             lastKnownKey = key;
                             
                         }
-                        console.log('lastKnownKey', lastKnownKey)
                         resolve(array)
                     })
                 } else { 
-                    console.log('Nth CALL TO DATABASE ... ', lastKnownKey, STEP)
                     ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            console.log('data key::', key)
                             let user = snaps.val()[key]
                             user.uid = key
                             array.push(user)
                             lastKnownKey = key;
                         }
-                        console.log('lastKnownKey', lastKnownKey)
                         resolve(array)
                     });
                     
@@ -73,5 +87,65 @@ function getSingleUser(STEP){
         // execute()
     })
 }
+
+async function getConversations(db, data){
+    return conversations.getConversationsForUserId(db, data[0].uid).then((convs)=> {
+        console.log(`RETRIEVED ${convs.length} conversations from user --> `, data[0].uid)
+        return convs
+    }).then((convs)=>{
+        console.log(`SAVE ${convs.length} conversations from user ${data[0].uid} to 'conversations' collection on MONGODB`)
+        return conversations.saveToMongo(convs)
+    }).catch(err => {
+        console.log(`ERROR occurred while getConversations for user ${data[0].uid} : ${err}`)
+    })
+}
+
+async function getArchivedConversations(db, data){
+    return archived_conversations.getConversationsForUserId(db, data[0].uid).then((convs)=> {
+        console.log(`RETRIEVED ${convs.length} archived conversations from user --> `, data[0].uid)
+        return convs
+    }).then((convs)=>{
+        console.log(`SAVE ${convs.length} archived conversations from user ${data[0].uid} to 'archived_conversations' collection on MONGODB`)
+        return archived_conversations.saveToMongo(convs)
+    }).catch(err => {
+        console.log(`ERROR occurred while getArchivedConversations for user ${data[0].uid} : ${err}`)
+    })
+}
+
+async function getMessages(db, data){
+    return messages.getMessagesForUserId(db, data[0].uid).then((messages)=> {
+        console.log(`RETRIEVED ${messages.length} messages from user --> `, data[0].uid)
+        return messages
+    }).then((messagesArray)=>{
+        console.log(`SAVE ${messagesArray.length} messages from user ${data[0].uid} to 'messages' collection on MONGODB`)
+        return messages.saveToMongo(messagesArray)
+    }).catch(err => {
+        console.log(`ERROR occurred while getMessages for user ${data[0].uid} : ${err}`)
+    })
+}
+
+
+async function getInstances(db, data){
+    return instances.getInstancesForUserId(db, data[0].uid).then((instances)=> {
+        console.log(`RETRIEVED ${instances.length} instances from user --> `, data[0].uid)
+        return instances
+    }).then((instancesArray)=>{
+        console.log(`SAVE ${instancesArray.length} instances from user ${data[0].uid} to 'instances' collection on MONGODB`)
+        return instances.saveToMongo(instancesArray)
+    }).catch(err => {
+        console.log(`ERROR occurred while getInstances for user ${data[0].uid} : ${err}`)
+    })
+}
+
+
+function writeJsonLogger(jsonContent){
+    fs.writeFile(global.jsonLoggerFile, jsonContent, 'utf8', function (err) {
+        if (err) {
+            console.log("An error occured while writing JSON Object to File.");
+            return console.log(err);
+        }
+    }); 
+}
+
 
 module.exports = { getUser }
