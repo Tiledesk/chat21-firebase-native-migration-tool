@@ -36,32 +36,30 @@ function getElements(STEP, userId){
         // async function execute(){
             if(STEP > 0){
                 if(lastKnownKey == ''){
-                    console.log('FIRST CALL TO DATABASE ... ', lastKnownKey)
+                    // console.log('FIRST CALL TO DATABASE ... ', lastKnownKey)
                     ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            console.log('data conversation key::', key)
+                            // console.log('data conversation key::', key)
                             let conversation = snaps.val()[key]
                             Object.keys(conversation).forEach((messageID)=> {
                                 let message = generateGroupElementForMongo(conversation[messageID], messageID, key, userId)
                                 array.push(message)
                                 
                             })
-                            
                         }
                         lastKnownKey = key;
                         console.log('lastKnownKey', lastKnownKey)
                         resolve(array)
                     })
                 } else { 
-                    console.log('Nth CALL TO DATABASE ... ', lastKnownKey, STEP)
+                    // console.log('Nth CALL TO DATABASE ... ', lastKnownKey, STEP)
                     ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            console.log('data conversation key::', key)
+                            // console.log('data conversation key::', key)
                             let conversation = snaps.val()[key]
                             Object.keys(conversation).forEach((messageID)=> {
                                 let message = generateGroupElementForMongo(conversation[messageID], messageID, key , userId)
                                 array.push(message)
-                                
                             })
                         }
                         lastKnownKey = key;

@@ -55,7 +55,7 @@ function getSingleUser(STEP){
         let array = []
         // async function execute(){
             // lastKnownKey = 'swK2FZ8tWENTvEYYpsm3pqjpv3B2'
-            lastKnownKey = "5fd3368949610e0034984e90"
+            // lastKnownKey = "5fd3368949610e0034984e90"
             if(STEP > 0){
                 if(lastKnownKey == ''){
                     ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
@@ -64,7 +64,6 @@ function getSingleUser(STEP){
                             user.uid = key
                             array.push(user)
                             lastKnownKey = key;
-                            
                         }
                         resolve(array)
                     })

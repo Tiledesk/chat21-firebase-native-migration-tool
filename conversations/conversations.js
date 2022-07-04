@@ -69,7 +69,7 @@ async function saveToMongo(convs){
         let count=1
         if(convs && convs.length > 0){
             convs.forEach(conv =>{
-                console.log('Conversation id::', conv.key)
+                // console.log('Conversation id::', conv.key)
                 db.insertOne(conv, {upsert: true, multi: true}, function(err, res) {
                     if (err) throw err;
                     
