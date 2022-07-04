@@ -97,8 +97,9 @@ function initiFirebaseDatabase(){
 
 
 async function initMondoDb(){
-    // const uri = process.env.MONGO_databaseURL;
-    const uri = 'mongodb://127.0.0.1:27017'
+    const uri = process.env.MONGO_databaseURL;
+    const db_name = process.env.MONGO_DBName
+    // const uri = 'mongodb://127.0.0.1:27017'
     console.log('INITIALIZE MONGO database connection to url: ', uri)
     const client = new MongoClient(uri);
 
@@ -119,7 +120,7 @@ async function initMondoDb(){
         console.error(e);
     } finally {
         //Public db to global
-        return global.mongoDB =  client.db("migration")
+        return global.mongoDB =  client.db(db_name)
     }
 }
 
