@@ -31,19 +31,33 @@ To generate a private key file for your service account:
 
 Create a .env file and provide che following string variable:
 ```
-FIREBASE_databaseURL = https://<DATABASE_NAME>.firebaseio.com
+FIREBASE_databaseURL * = https://<DATABASE_NAME>.firebaseio.com
 MONGO_databaseURL= <MONGO_URI>
 MONGO_DBName=<DATABASE_NAME>
 TENANT = <YOUR_TENANT>
 ```
+*To get <DATABASE_NAME>, in the Firebase console, open Settings > General and get 'Project name' property value
+
 ## Launch
+Before you run the module, you have to update the node memory with respect to the storage size of your firebase database. You can get this info in the Firebase console overview page. Then run the following:
+```
+export NODE_OPTIONS=--max_old_space_size=<size in bits>
+```
+e.g. export NODE_OPTIONS=--max_old_space_size=5120 (5Gb memory size)
 
 Run the following command to start migrating data from firebase to mongo
 ```
 npm start
 ```
 
+When migration ends you should see a log that advise you the task is compled with the duration time. Log seems as following
 
+```
+FINISCHED migration at <END_TIME>
+
+----> duration Time: <DURATION_TIME> <----
+
+```
 
 
 
