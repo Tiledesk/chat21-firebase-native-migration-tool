@@ -45,8 +45,8 @@ async function start(){
     .then(()=>{
         var endTime = moment()
         var timeDifference = endTime.diff(startTime, 'seconds')
-        console.log(`FINISCHED migration at ${endTime}...`)
-        console.log(`--------> duration Time: ${secondsToDhms(timeDifference)}...`)
+        console.log(`\n\n FINISCHED migration at ${endTime}...`)
+        console.log(`\n\n ----> duration Time: ${secondsToDhms(timeDifference)} <----`)
         return timeDifference
     })
     .catch((error)=> {
@@ -85,6 +85,7 @@ function initiFirebaseDatabase(){
         connectedRef.on("value", function (snap) {
             if (snap.val() === true) {
                 con = true;
+                console.log('FIREBASE DB CONNECTED ...')
                 resolve(db)
             } else {
                 con = false;
@@ -98,18 +99,11 @@ function initiFirebaseDatabase(){
 
 async function initMondoDb(){
     const uri = process.env.MONGO_databaseURL;
-    const db_name = process.env.MONGO_DBName
     // const uri = 'mongodb://127.0.0.1:27017'
+    const db_name = process.env.MONGO_DBName
     console.log('INITIALIZE MONGO database connection to url: ', uri)
     const client = new MongoClient(uri);
 
-    // const uri ="mongodb://localhost:27017"
-    // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
-    // MongoClient.connect(uri, function(err, db) {
-    //     if (err) throw err;
-    //     global.mongoDB = db.db("migration");
-    // });
- 
     try {
         // Connect to the MongoDB cluster
         await client.connect().then(()=> {
