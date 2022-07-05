@@ -1,6 +1,6 @@
 # TILEDESK FIREBASE-to-MONGO migration module
 
-Tiledesk FIREBASE-to-MONGO migration module allow you to migrate tilesk firebase database to a mongo remote database. 
+Tiledesk FIREBASE-to-MONGO migration module allow you to migrate tiledesk firebase database to a mongo remote database. 
 With this module, you can migrate the following tiledesk firebase database nodes:
 - groups
 - users/archived_conversations
@@ -14,22 +14,10 @@ With this module, you can migrate the following tiledesk firebase database nodes
 - NodeJs and npm installed (suggested versions are NodeJS 12.20.2 and NPM 6.14.11)
 
 ## How to install
-Before you start, you must have a serviceAccountKey.json file in the current project folder. 
+Before you start, you must have a serviceAccountKey.json file in the current project folder, as described in the next section. 
 
 ### Initialize Firebse SDK
-The Admin SDK is a set of server libraries that lets you interact with Firebase from privileged environments to perform actions like:
-
-Read and write Realtime Database data with full admin privileges.
-Programmatically send Firebase Cloud Messaging messages using a simple, alternative approach to the Firebase Cloud Messaging server protocols.
-Generate and verify Firebase auth tokens.
-Access Google Cloud resources like Cloud Storage buckets and Cloud Firestore databases associated with your Firebase projects.
-Create your own simplified admin console to do things like look up user data or change a user's email address for authentication.
-The Firebase Admin Node.js SDK is available on npm as firebase-admin:
-```
-$ npm install --save firebase-admin
-```
-Once you have decided the firebase database project to migrate, you can initialize the firebase SDK with admin privileges.
-
+The Admin SDK is a set of server libraries that lets you interact with Firebase from privileged environments to perform some utils actions.
 
 To authenticate a service account and authorize it to access Firebase services, you must generate a private key file in JSON format.
 
