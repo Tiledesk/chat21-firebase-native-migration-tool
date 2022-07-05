@@ -40,7 +40,7 @@ function getElements(STEP){
                 if(lastKnownKey == ''){
                     ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            console.log('data key::', key)
+                            // console.log('data key::', key)
                             let group = generateGroupElementForMongo(snaps.val()[key], key)
                             array.push(group)
                             lastKnownKey = key;
@@ -51,7 +51,7 @@ function getElements(STEP){
                 } else { 
                     ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
                         for(key in snaps.val()){
-                            console.log('data key::', key)
+                            // console.log('data key::', key)
                             let group = generateGroupElementForMongo(snaps.val()[key], key)
                             array.push(group)
                             lastKnownKey = key;
@@ -73,7 +73,7 @@ async function saveToMongo(){
     const db = global.mongoDB.collection('groups')
     db.insertMany(arrayElements, function(err, res) {
         if (err) throw err;
-        console.log("Number of documents inserted: " + res.insertedCount);
+        console.log("(GROUPS) Number of documents inserted: " + res.insertedCount);
     });
 }
 

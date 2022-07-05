@@ -4,7 +4,7 @@ var lastKnownKey='';
 async function getConversationsForUserId(db, uid){
     var arrayElements = [];
     lastKnownKey=''
-    console.log('ARCHIVED CONVERSATIONS FIREBASE NODE INIT ...', uid, lastKnownKey)
+    // console.log('ARCHIVED CONVERSATIONS FIREBASE NODE INIT ...', uid, lastKnownKey)
     const conversations_uid = '/apps/'+ process.env.TENANT  +'/users/'+uid +'/archived_conversations'
     ref = db.ref(conversations_uid);
     let complete = false;

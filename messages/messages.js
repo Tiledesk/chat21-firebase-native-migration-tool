@@ -4,7 +4,7 @@ var lastKnownKey='';
 async function getMessagesForUserId(db, uid){
     var arrayElements = [];
     lastKnownKey=''
-    console.log('MESSAGES FIREBASE NODE INIT ...')
+    // console.log('MESSAGES FIREBASE NODE INIT ...')
     const conversations_uid = '/apps/'+ process.env.TENANT  +'/users/'+uid +'/messages/'
     ref = db.ref(conversations_uid);
     let complete = false;
@@ -48,7 +48,7 @@ function getElements(STEP, userId){
                             })
                         }
                         lastKnownKey = key;
-                        console.log('lastKnownKey', lastKnownKey)
+                        // console.log('lastKnownKey', lastKnownKey)
                         resolve(array)
                     })
                 } else { 
@@ -63,7 +63,7 @@ function getElements(STEP, userId){
                             })
                         }
                         lastKnownKey = key;
-                        console.log('lastKnownKey', lastKnownKey)
+                        // console.log('lastKnownKey', lastKnownKey)
                         resolve(array)
                     });
                     
