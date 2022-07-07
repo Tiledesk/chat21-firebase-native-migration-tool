@@ -28,20 +28,28 @@ async function getUser(){
             }
         })
         .then((currentUser)=> {
-            console.log('CONVERSATIONS for user', currentUser[0].uid)
-            return getConversations(db.FIREBASE_db, currentUser)
+            if(!complete){
+                console.log('CONVERSATIONS for user', currentUser[0].uid)
+                return getConversations(db.FIREBASE_db, currentUser)
+            }
         })
         .then(()=> {
-            console.log('ARCHIVED CONVERSATIONS for user', currentUser[0].uid)
-            return getArchivedConversations(db.FIREBASE_db, currentUser)
+            if(!complete){
+                console.log('ARCHIVED CONVERSATIONS for user', currentUser[0].uid)
+                return getArchivedConversations(db.FIREBASE_db, currentUser)
+            }
         })
         .then(()=> {
-            console.log('MESSAGES for user', currentUser[0].uid)
-            return getMessages(db.FIREBASE_db, currentUser)
+            if(!complete){
+                console.log('MESSAGES for user', currentUser[0].uid)
+                return getMessages(db.FIREBASE_db, currentUser)
+            }
         })
         .then(()=> {
-            console.log('INSTANCES for user', currentUser[0].uid)
-            return getInstances(db.FIREBASE_db, currentUser)
+            if(!complete){
+                console.log('INSTANCES for user', currentUser[0].uid)
+                return getInstances(db.FIREBASE_db, currentUser)
+            }
         })
         .catch((err)=> {
             console.log(err)

@@ -1,3 +1,10 @@
+/**
+ *  TILEDESK srl ©
+ *  author: Gabriele Panico
+ *  version: 1.1
+ * 
+ */
+
 const groups = require("./groups/groups")
 const users = require('./users/users')
 const dotenv = require('dotenv');
@@ -51,6 +58,8 @@ async function start(){
     })
     .catch((error)=> {
         console.error('ERROR EVENT OCCURRED-->', error)
+    }).finally(()=> {
+        process.exit(0)
     })
 
       // MONGO_db = initMondoDb().then((client)=>{
