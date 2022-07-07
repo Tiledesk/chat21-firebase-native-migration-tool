@@ -29,15 +29,15 @@ async function start(){
     .then(()=>{
         createCollection('groups')
         createCollection('conversations')
-        createCollection('archived_conversations')
         createCollection('messages')
         createCollection('instances')
         return
     })
     .then(()=> {
-        return groups.getGroups().then(()=> {
-            return groups.saveToMongo()
-        })
+        return groups.getGroups()
+        // .then(()=> {
+        //     return groups.saveToMongo()
+        // })
     })
     .then(()=>{
         return users.getUser()
@@ -69,7 +69,8 @@ function initiFirebaseDatabase(){
     return new Promise((resolve, reject) => {
 
         // Fetch the service account key JSON file contents
-        var serviceAccount = require("./serviceAccountKey.json");
+        const privateKey_path = process.env.FB_PRIVATE_KEY_PATH
+        var serviceAccount = require(privateKey_path);
         console.log('INITIALIZE Firebase database connection to url: ', process.env.FIREBASE_databaseURL)
         // Initialize the app with a service account, granting admin privileges
         firebaseApp.initializeApp({
@@ -147,7 +148,7 @@ function secondsToDhms(seconds) {
 
 async function laodJsonLogger(){
     global.jsonLoggerFile = process.env.LOG_NAME
-    if (!fs.existsSync(global.jsonLoggerFile)) 
+    if (global.jsonLoggerFile && !fs.existsSync(global.jsonLoggerFile)) 
         fs.writeFileSync(global.jsonLoggerFile);
     return 
 }
