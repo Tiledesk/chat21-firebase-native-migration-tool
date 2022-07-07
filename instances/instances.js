@@ -70,12 +70,11 @@ async function saveToMongo(instances){
         let count=1
         if(instances && instances.length > 0){
             instances.forEach(instance =>{
-                console.log('Instance id::', instance.key)
                 db.insertOne(instance, {upsert: true, multi: true}, function(err, res) {
                     if (err) throw err;
                     
                     if(count === instances.length){
-                        console.log("Number of documents inserted: ", instances.length);
+                        console.log("(INSTANCES) Number of documents inserted: ", instances.length);
                         resolve('ok')
                     }else{
                         count= count + 1

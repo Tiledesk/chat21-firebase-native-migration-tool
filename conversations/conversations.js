@@ -74,7 +74,7 @@ async function saveToMongo(convs){
                     if (err) throw err;
                     
                     if(count === convs.length){
-                        console.log("Number of documents inserted: ", convs.length);
+                        console.log("(CONV) Number of documents inserted: ", convs.length);
                         resolve('ok')
                     }else{
                         count= count + 1

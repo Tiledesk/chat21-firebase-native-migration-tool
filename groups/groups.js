@@ -18,16 +18,21 @@ async function getGroups(){
         await getElements(STEP).then((data)=> {
             arrayElements.push(...data)
             if (data.length === STEP || data.length) {
-                STEP +=2
+                STEP =20
             } else {
                 complete = true;
             }
-        }).catch((err)=> {
+            return data
+        })
+        .then((data)=> {
+            saveToMongo(data)
+        })
+        .catch((err)=> {
             console.log(err)
             complete = true
         })
     }
-    console.log('DATA FROM FIREBASE-->', arrayElements.length)
+    console.log(`(GROUPS) SAVED ${arrayElements.length} DATA FROM FIREBASE\n`, )
 
 }
 
@@ -69,12 +74,14 @@ function getElements(STEP){
 }
 
 
-async function saveToMongo(){
+async function saveToMongo(groups){
     const db = global.mongoDB.collection('groups')
-    db.insertMany(arrayElements, function(err, res) {
-        if (err) throw err;
-        console.log("(GROUPS) Number of documents inserted: " + res.insertedCount);
-    });
+    if(groups && groups.length > 0){
+        db.insertMany(groups, function(err, res) {
+            if (err) throw err;
+            // console.log("(GROUPS) Number of documents inserted: " + res.insertedCount);
+        });
+    }
 }
 
 

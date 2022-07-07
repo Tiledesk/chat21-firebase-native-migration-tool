@@ -83,7 +83,7 @@ async function saveToMongo(messages){
             db.insertMany(messages, function(err, res) {
                 if (err) throw err;
                 if(res) {
-                    console.log("Number of documents inserted: ",res.insertedCount);
+                    console.log("(MESSAGES) Number of documents inserted: ",res.insertedCount);
                     resolve('ok')
                 }
                 

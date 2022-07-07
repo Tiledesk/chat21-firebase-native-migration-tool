@@ -5,7 +5,7 @@ const archived_conversations = require('../conversations/archived_conversations'
 const messages = require('../messages/messages.js')
 const instances = require('../instances/instances.js')
 var ref;
-var lastKnownKey='';
+var lastKnownKey=''
 
 async function getUser(){
     console.log('USERS FIREBASE NODE INIT ...')
@@ -21,7 +21,7 @@ async function getUser(){
         await getSingleUser(STEP).then((data)=> {
             currentUser = data
             if (data.length === STEP || data.length) {
-                console.log('RETRIVED user with id-->', data[0].uid)
+                console.log('\n\nRETRIVED user with id-->', data[0].uid)
                 return currentUser
             } else {
                 complete = true;
@@ -53,37 +53,32 @@ async function getUser(){
 function getSingleUser(STEP){
     return new Promise((resolve, reject)=> {
         let array = []
-        // async function execute(){
-            // lastKnownKey = 'swK2FZ8tWENTvEYYpsm3pqjpv3B2'
-            // lastKnownKey = "5fd3368949610e0034984e90"
-            if(STEP > 0){
-                if(lastKnownKey == ''){
-                    ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
-                        for(key in snaps.val()){
-                            let user = snaps.val()[key]
-                            user.uid = key
-                            array.push(user)
-                            lastKnownKey = key;
-                        }
-                        resolve(array)
-                    })
-                } else { 
-                    ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
-                        for(key in snaps.val()){
-                            let user = snaps.val()[key]
-                            user.uid = key
-                            array.push(user)
-                            lastKnownKey = key;
-                        }
-                        resolve(array)
-                    });
-                    
-                }
-            }else{
-                reject('ERROR --> STEP MUST BE > O', STEP)
+        if(STEP > 0){
+            if(lastKnownKey == ''){
+                ref.orderByKey().limitToFirst(STEP).get().then(snaps => {
+                    for(key in snaps.val()){
+                        let user = snaps.val()[key]
+                        user.uid = key
+                        array.push(user)
+                        lastKnownKey = key;
+                    }
+                    resolve(array)
+                })
+            } else { 
+                ref.orderByKey().startAfter(lastKnownKey).limitToFirst(STEP).get().then(snaps => {
+                    for(key in snaps.val()){
+                        let user = snaps.val()[key]
+                        user.uid = key
+                        array.push(user)
+                        lastKnownKey = key;
+                    }
+                    resolve(array)
+                });
+                
             }
-        // }
-        // execute()
+        }else{
+            reject('ERROR --> STEP MUST BE > O', STEP)
+        }
     })
 }
 
