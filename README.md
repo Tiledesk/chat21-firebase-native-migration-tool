@@ -34,6 +34,7 @@ To generate a private key file for your service account:
 Create a .env file and provide che following string variable:
 ```html
 FIREBASE_databaseURL = https://<DATABASE_NAME>.firebaseio.com
+FB_PRIVATE_KEY_PATH = <PATH_TO_SERVICEACCOUNT_KEY_JSON_FILE>
 MONGO_databaseURL= <MONGO_URI>
 MONGO_DBName=<DATABASE_NAME>
 TENANT = <YOUR_TENANT>
